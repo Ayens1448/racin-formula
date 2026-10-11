@@ -1,0 +1,6 @@
+{
+  "name": "Apex GP: Formula Grand Prix",
+  "description": "F1-themed 22-car championship racer featuring procedural track generation adapting to your driving style, 21 championship rivals, garage upgrades, and telemetry.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

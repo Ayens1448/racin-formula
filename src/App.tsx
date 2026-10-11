@@ -25,7 +25,7 @@ import { GarageView } from './components/GarageView';
 import { AILearningDashboard } from './components/AILearningDashboard';
 import { RaceResultsModal } from './components/RaceResultsModal';
 
-import { Flag, Wrench, Brain, Play, Volume2, VolumeX, Coins } from 'lucide-react';
+import { Flag, Wrench, Brain, Play, Volume2, VolumeX, Coins, RotateCw, Smartphone } from 'lucide-react';
 
 type AppScreen = 'PRE_RACE' | 'RACING' | 'GARAGE' | 'TELEMETRY';
 
@@ -117,6 +117,25 @@ export default function App() {
   const [raceOvertakes, setRaceOvertakes] = useState<number>(0);
   const [fastestLapName, setFastestLapName] = useState<string>('Max Verstappen');
   const [raceSessionId, setRaceSessionId] = useState<number>(0);
+
+  // Mobile Landscape Orientation Detection
+  const [isPortraitMobile, setIsPortraitMobile] = useState<boolean>(false);
+  const [dismissOrientationWarning, setDismissOrientationWarning] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkOrientation = () => {
+      const isMobile = window.innerWidth <= 900 && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+      const isPortrait = window.innerHeight > window.innerWidth;
+      setIsPortraitMobile(isMobile && isPortrait);
+    };
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
 
   // Keyboard and Virtual Controls
   const [controls, setControls] = useState<PlayerControls>({
@@ -585,6 +604,34 @@ export default function App() {
             setScreen('TELEMETRY');
           }}
         />
+      )}
+
+      {/* Mobile Portrait Landscape Recommendation Modal */}
+      {isPortraitMobile && !dismissOrientationWarning && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md select-none">
+          <div className="w-full max-w-sm bg-zinc-950 border-2 border-red-500/60 rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center gap-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-4 bg-red-600/20 border border-red-500/40 rounded-full text-red-500 animate-bounce">
+              <Smartphone className="w-10 h-10 rotate-90" />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase font-black tracking-widest text-red-400 mb-1">
+                Landscape Mode Recommended
+              </div>
+              <h2 className="text-2xl font-black italic text-white uppercase">
+                ROTATE YOUR PHONE
+              </h2>
+              <p className="text-xs text-zinc-300 mt-2 leading-relaxed">
+                Apex GP is optimized for landscape racing. Turn your phone sideways for wide tracks, high speeds, and precision steering touch controls!
+              </p>
+            </div>
+            <button
+              onClick={() => setDismissOrientationWarning(true)}
+              className="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black italic tracking-wider rounded-xl shadow-lg transition cursor-pointer"
+            >
+              CONTINUE IN PORTRAIT
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
